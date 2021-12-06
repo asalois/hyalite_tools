@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH -J ${job_name}${str(num).zfill(2)} # Name for your job
+#SBATCH -n ${tasks} # Number of tasks when using MPI. 
+#SBATCH -N ${nodes} # Number of nodes to spread cores across - default is 1 
+#SBATCH --array=${start}-${end}%${limit} 
+#SBATCH --mem ${mem} # Megabytes of memory requested. 
+#SBATCH -t ${time} # Runtime in minutes
+#SBATCH -p ${queue} # Partition to submit to 
+#SBATCH -account classroom 
+#SBATCH -o ${job_name}${str(num).zfill(2)}_%A_%4a.out.txt # Standard output
+#SBATCH -e ${job_name}${str(num).zfill(2)}_%A_%4a.err.txt # Standard error
+
+date
+echo "Hello from $(hostname)."
+
+module load matlab/R2020a
+echo "Run get BER script"
+matlab -nodesktop -nodisplay -nosplash -singleCompThread -r "${matlab_func}(${"${"}SLURM_ARRAY_TASK_ID);exit;" 
+echo "Ended batch processing at `date`."
